@@ -1,4 +1,9 @@
-var https = require('https')
+// RSS parsing script for Lambda + Alexa skill
+// This is all loosely based on https://github.com/alexa/skill-sample-nodejs-feed
+// ==============================================================================
+
+const config = require('./configuration');
+const feedHelper = require('./feedHelper');
 
 exports.handler = (event, context) => {
 
@@ -84,6 +89,7 @@ getRSSData = (RSSDataType) => {
 
   switch (RSSDataType) {
     case 'headlines':
+      //TODO: Actually provide headlines
       return 'here are your headlines'
     break;
 
