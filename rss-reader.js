@@ -1,4 +1,20 @@
-var https = require('https')
+// var https = require('https')
+
+// 'use strict';
+
+var xml2js = require('xml2js');
+
+var options = {  // options passed to xml2js parser
+  explicitCharkey: false, // undocumented
+  trim: false,            // trim the leading/trailing whitespace from text nodes
+  normalize: false,       // trim interior whitespace inside text nodes
+  explicitRoot: false,    // return the root node in the resulting object?
+  emptyTag: null,         // the default value for empty nodes
+  explicitArray: true,    // always put child nodes in an array
+  ignoreAttrs: false,     // ignore attributes, only create text nodes
+  mergeAttrs: false,      // merge attributes and child elements
+  validator: null         // a callable validator
+};
 
 exports.handler = (event, context) => {
 
@@ -12,20 +28,15 @@ exports.handler = (event, context) => {
     switch (event.request.type) {
 
       case 'LaunchRequest':
-        // Launch Request
-        console.log(`LAUNCH REQUEST`)
         context.succeed(
           generateResponse(
-            buildSpeechletResponse('Thank you, I have been invoked', true),
+            buildSpeechletResponse('Hello, what would you like to ask me?', true),
             {}
           )
         )
         break;
 
       case 'IntentRequest':
-        // Intent Request
-        console.log(`INTENT REQUEST`)
-
         switch(event.request.intent.name) {
           case 'testResponse':
              context.succeed(
@@ -36,31 +47,36 @@ exports.handler = (event, context) => {
             )
             break;
 
-         
+          case 'fetchHeadlines':
+             context.succeed(
+              generateResponse(
+                buildSpeechletResponse(getRSSData('headlines'), true),
+                {}
+              )
+            )
+            break;
 
           default:
             throw 'Invalid intent'
         }
-
         break;
 
       case 'SessionEndedRequest':
         // Session Ended Request
-        console.log(`SESSION ENDED REQUEST`)
+        console.log('SESSION ENDED REQUEST')
         break;
 
       default:
-        context.fail(`INVALID REQUEST TYPE: ${event.request.type}`)
+        context.fail('INVALID REQUEST TYPE: ${event.request.type}')
 
     }
 
-  } catch(error) { context.fail(`Exception: ${error}`) }
+  } catch(error) { context.fail('Exception: ${error}') }
 
 }
 
 // Helpers
 buildSpeechletResponse = (outputText, shouldEndSession) => {
-
   return {
     outputSpeech: {
       type: 'PlainText',
@@ -72,11 +88,25 @@ buildSpeechletResponse = (outputText, shouldEndSession) => {
 }
 
 generateResponse = (speechletResponse, sessionAttributes) => {
-
   return {
     version: '1.0',
     sessionAttributes: sessionAttributes,
     response: speechletResponse
+  }
+
+}
+
+getRSSData = (RSSDataType) => {
+
+
+
+  switch (RSSDataType) {
+    case 'headlines':
+      return 'here are your headlines'
+    break;
+
+    default:
+      return 'Sorry not a valid request'
   }
 
 }
