@@ -2,8 +2,23 @@
 // This is all loosely based on https://github.com/alexa/skill-sample-nodejs-feed
 // ==============================================================================
 
-const config = require('./configuration');
-const feedHelper = require('./feedHelper');
+// const config = require('./configuration');
+// const feedHelper = require('./feedHelper');
+
+// const http = require('http');
+
+// const hostname = '127.0.0.1';
+// const port = 3000;
+
+// const server = http.createServer((req, res) => {
+//   res.statusCode = 200;
+//   res.setHeader('Content-Type', 'text/plain');
+//   res.end('Test Page\n');
+// });
+
+// server.listen(port, hostname, () => {
+//   console.log(`Server running at http://${hostname}:${port}/`);
+// });
 
 exports.handler = (event, context) => {
 
@@ -17,12 +32,7 @@ exports.handler = (event, context) => {
     switch (event.request.type) {
 
       case 'LaunchRequest':
-        context.succeed(
-          generateResponse(
-            buildSpeechletResponse('Hello, what would you like to ask me?', true),
-            {}
-          )
-        )
+        processLaunchRequest(context);
         break;
 
       case 'IntentRequest':
@@ -37,12 +47,7 @@ exports.handler = (event, context) => {
             break;
 
           case 'fetchHeadlines':
-             context.succeed(
-              generateResponse(
-                buildSpeechletResponse(getRSSData('headlines'), true),
-                {}
-              )
-            )
+            getRSSData(context, 'headlines');
             break;
 
           default:
@@ -85,12 +90,42 @@ generateResponse = (speechletResponse, sessionAttributes) => {
 
 }
 
-getRSSData = (RSSDataType) => {
+// Request handlers
+processLaunchRequest = (context) => {
+
+  context.succeed(
+    generateResponse(
+      buildSpeechletResponse('Hello there, what would you like to ask me?', true),
+      {}
+    )
+  )
+}
+
+// RSS functions
+getRSSData = (context, RSSDataType) => {
 
   switch (RSSDataType) {
     case 'headlines':
-      //TODO: Actually provide headlines
-      return 'here are your headlines'
+      var Feed = require('rss-to-json');
+
+      Feed.load('http://feeds.businessinsider.com.au/businessinsideraustralia', function(err, rss){
+          
+          var speechString = '';
+          var rssItems = rss.items;
+
+          for (var key in rssItems) {
+                if (rssItems.hasOwnProperty(key)) {
+                speechString += 'Story ' + key + ', ' + rssItems[key].title + '. ';
+            }
+          }
+          context.succeed(
+            generateResponse(
+              buildSpeechletResponse(speechString, true),
+              {}
+            )
+          );
+
+        });
     break;
 
     default:
