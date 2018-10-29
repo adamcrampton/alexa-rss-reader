@@ -65,12 +65,16 @@ const handlers = {
     // Not used here, but may be useful later (will remove if not).
     let intent = this.event.request.intent;
 
+    // Initialise speech array, which will eventually be converted to append to the speech string.
+    var speechArray = [];
+    var speechString = '';
+
     // Make emit method available within the scope of request.
     var emitMethod = this.emit;
 
     Feed.load('http://feeds.businessinsider.com.au/businessinsideraustralia', function(err, rss){  
       // Set intro.
-      var speechString += `Ok, here are the trending stories on Business Insider Australia right now. `;
+      var speechString += 'Ok, here are the trending stories on Business Insider Australia right now. ';
       var rssItems = rss.items;
 
       for (var key in rssItems) {
