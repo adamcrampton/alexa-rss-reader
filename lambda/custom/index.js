@@ -74,12 +74,15 @@ const handlers = {
       var speechString = '';
 
       // Set intro.
-      speechString += 'Ok, here are the trending stories on Business Insider Australia right now. ';
+      speechString += 'Ok, here are the top 10 trending stories on Business Insider Australia right now. ';
       var rssItems = rss.items;
 
       for (var key in rssItems) {
             if (rssItems.hasOwnProperty(key)) {
-            speechString += 'Story ' + key + ', ' + rssItems[key].title + '. ';
+            // Convert pubDate.
+            var pubDate = moment(rssItems[key].pubDate).format('h:mm A');
+
+            speechString += pubDate  + ', ' + rssItems[key].title + '. ';
         }
       }
 
