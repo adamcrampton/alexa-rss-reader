@@ -36,14 +36,14 @@ const getSlotValue = (intent) => {
 }
 
 // Return the correct opening phrase and RSS endpoint for feed request.
-const feedVars = (slotName) => {
+const getFeedVars = (slotName) => {
   switch (slotName) {
     case 'latest':
-
+      return {'phrase':'the top 10 stories', 'endpoint':'latestEndpoint'};
     break;
 
     case 'australian':
-
+      return {'phrase':'the top 10 Australian stories', 'endpoint':'latestAusEndpoint'};;
     break;
 
     default:
@@ -69,16 +69,19 @@ const handlers = {
     let intent = this.event.request.intent;
     const slotValue = getSlotValue(intent);
 
+    // Get opening speech string phrase and RSS endpoint name.
+    const feedVars = getFeedVars(slotValue);
+
     // Make emit method available within the scope of request.
     var emitMethod = this.emit;
 
-    Feed.load(process.env.trendingEndpoint, function(err, rss){  
+    Feed.load(process.env.latestEndpoint, function(err, rss){  
         // Initialise speech array, which will eventually be converted to append to the speech string.
       var speechArray = [];
       var speechString = '';
 
       // Set intro.
-      speechString += 'Ok, here are the top 10 stories on ' + process.env.siteName + ' right now. ';
+      speechString += 'Ok, here are ' + feedVars.phrase + ' on ' + process.env.siteName + ' right now. ';
       var rssItems = rss.items;
 
       // Loop through each item, adding the article timestamp before each title.
