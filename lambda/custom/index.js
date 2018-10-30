@@ -65,16 +65,16 @@ const handlers = {
     // Not used here, but may be useful later (will remove if not).
     let intent = this.event.request.intent;
 
-    // Initialise speech array, which will eventually be converted to append to the speech string.
-    var speechArray = [];
-    var speechString = '';
-
     // Make emit method available within the scope of request.
     var emitMethod = this.emit;
 
     Feed.load('http://feeds.businessinsider.com.au/businessinsideraustralia', function(err, rss){  
+        // Initialise speech array, which will eventually be converted to append to the speech string.
+      var speechArray = [];
+      var speechString = '';
+
       // Set intro.
-      var speechString += 'Ok, here are the trending stories on Business Insider Australia right now. ';
+      speechString += 'Ok, here are the trending stories on Business Insider Australia right now. ';
       var rssItems = rss.items;
 
       for (var key in rssItems) {
@@ -103,17 +103,17 @@ exports.handler = function(event, context, callback) {
 
 
 // Uncomment to fire up local Node server
-// const http = require('http');
+const http = require('http');
 
-// const hostname = '127.0.0.1';
-// const port = 3000;
+const hostname = '127.0.0.1';
+const port = 3000;
 
-// const server = http.createServer((req, res) => {
-//   res.statusCode = 200;
-//   res.setHeader('Content-Type', 'text/plain');
-//   res.end('Test Page\n');
-// });
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Test Page\n');
+});
 
-// server.listen(port, hostname, () => {
-//   console.log(`Server running at http://${hostname}:${port}/`);
-// });
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
