@@ -33,34 +33,6 @@ const handlers = {
   'Unhandled': function() {
     this.emit(':ask', 'What would you like to do?', 'Please say that again?');
   },
-  'getTrending': function() {
-    // Make emit method available within the scope of request.
-    var emitMethod = this.emit;
-
-    request('https://files.alluremedia.com.au/lambda/stan_trending.json', function(err, res, body) {  
-      // Parse the entire JSON body
-      var bodyObject = JSON.parse(body);
-
-      // Initialise speech array, which will eventually be converted to append to the speech string.
-      var speechArray = [];
-      var speechString = '';
-
-      speechString += "Ok, here are trending shows on Stan right now. ";
-
-      for (var key in bodyObject.entries) {
-          if (bodyObject.entries.hasOwnProperty(key)) {
-            speechArray.push(bodyObject.entries[key].title);
-        }
-      }
-
-      speechString += commaStringFormatter(speechArray);
-
-      speechString = speechString.replace('&', 'and');
-
-      emitMethod(':tell', speechString);
-    });
-  },
-
   'getTrendingTitles': function() {
     // Not used here, but may be useful later (will remove if not).
     let intent = this.event.request.intent;
@@ -68,22 +40,18 @@ const handlers = {
     // Make emit method available within the scope of request.
     var emitMethod = this.emit;
 
-    Feed.load('http://feeds.businessinsider.com.au/businessinsideraustralia', function(err, rss){  
+    Feed.load(process.env.trendingEndpoint, function(err, rss){  
         // Initialise speech array, which will eventually be converted to append to the speech string.
       var speechArray = [];
       var speechString = '';
 
       // Set intro.
-      speechString += 'Ok, here are the top 10 trending stories on Business Insider Australia right now. ';
+      speechString += 'Ok, here are the top 10 trending stories on ' + process.env.siteName + ' right now. ';
       var rssItems = rss.items;
 
-      for (var key in rssItems) {
-            if (rssItems.hasOwnProperty(key)) {
-            // Convert pubDate.
-            var pubDate = moment(rssItems[key].pubDate).format('h:mm A');
-
-            speechString += pubDate  + ', ' + rssItems[key].title + '. ';
-        }
+      // Loop through each item, adding the article timestamp before each title.
+      for (var i = 0; i < 10; i++) {       
+        speechString += moment(rssItems[i].created).format('h:mm A') + ', ' + rssItems[i].title + '. ';
       }
 
       speechString += commaStringFormatter(speechArray);
