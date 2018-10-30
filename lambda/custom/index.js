@@ -7,6 +7,7 @@
 
 // Config Alexa SDK and required libraries.
 const Alexa = require('alexa-sdk');
+const AWS = require('aws-sdk');
 const moment = require('moment');
 const request = require('request');
 const Feed = require('rss-to-json');
@@ -21,6 +22,36 @@ const commaStringFormatter = (speechArray) => {
   return formattedString;
 }
 
+// Get slot value for this intent.
+const getSlotValue = (intent) => {
+  var slotValue = intent.slots.genre.value;
+
+  // Must be a string.
+  if (typeof slotValue === 'string') {
+    return slotValue; 
+  }
+
+  // No slot for the intent, or bad value.
+  return false;
+}
+
+// Return the correct opening phrase and RSS endpoint for feed request.
+const feedVars = (slotName) => {
+  switch (slotName) {
+    case 'latest':
+
+    break;
+
+    case 'australian':
+
+    break;
+
+    default:
+
+    break;
+  }
+}
+
 // Define handlers.
 const handlers = {
   'LaunchRequest': function() {
@@ -33,9 +64,10 @@ const handlers = {
   'Unhandled': function() {
     this.emit(':ask', 'What would you like to do?', 'Please say that again?');
   },
-  'getTrendingTitles': function() {
-    // Not used here, but may be useful later (will remove if not).
+  'fetchHeadlines': function() {
+    // Get the feed type based on intent.
     let intent = this.event.request.intent;
+    const slotValue = getSlotValue(intent);
 
     // Make emit method available within the scope of request.
     var emitMethod = this.emit;
@@ -46,7 +78,7 @@ const handlers = {
       var speechString = '';
 
       // Set intro.
-      speechString += 'Ok, here are the top 10 trending stories on ' + process.env.siteName + ' right now. ';
+      speechString += 'Ok, here are the top 10 stories on ' + process.env.siteName + ' right now. ';
       var rssItems = rss.items;
 
       // Loop through each item, adding the article timestamp before each title.
