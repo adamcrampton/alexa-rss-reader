@@ -71,11 +71,14 @@ const handlers = {
 
     // Get opening speech string phrase and RSS endpoint name.
     const feedVars = getFeedVars(slotValue);
+    const rssEndpoint = feedVars.endpoint;
+
+    var envValue = process.env[rssEndpoint];
 
     // Make emit method available within the scope of request.
     var emitMethod = this.emit;
 
-    Feed.load(process.env.latestEndpoint, function(err, rss){  
+    Feed.load(envValue, function(err, rss) {  
         // Initialise speech array, which will eventually be converted to append to the speech string.
       var speechArray = [];
       var speechString = '';
