@@ -24,7 +24,10 @@ const commaStringFormatter = (speechArray) => {
 
 // Get slot value for this intent.
 const getSlotValue = (intent) => {
-  var slotValue = intent.slots.feed.value;
+  var slotValues = intent.slots;
+
+  //TODO: Iterate through intent.slots and get the name and values of each.
+  // It'll be intent.slots.slotname.value
 
   // Must be a string.
   if (typeof slotValue === 'string') {
@@ -35,19 +38,37 @@ const getSlotValue = (intent) => {
   return false;
 }
 
-// Return the correct opening phrase and RSS endpoint for feed request.
-const getFeedVars = (slotName) => {
-  switch (slotName) {
+// Return the correct opening phrase for the request.
+const getPhrase = (intent) => {
+  switch (intent) {
     case 'latest':
-      return {'phrase':'the top 10 stories', 'endpoint':'latestEndpoint'};
+      return {'phrase':'the top 10 stories'};
     break;
 
     case 'australian':
-      return {'phrase':'the top 10 Australian stories', 'endpoint':'latestAusEndpoint'};;
+      return {'phrase':'the top 10 Australian stories'};
     break;
 
     default:
 
+    break;
+  }
+}
+
+// Return correct RSS endpoint based on slot value (if passed in);
+const getEndPoint = (slot) => {
+  switch(slot) {
+    case 'global':
+      return 'latestEndpoint';
+      break;
+
+    case 'australian':
+      return 'latestAusEndpoint';
+      break;
+    
+    default:
+      return 'latestEndpoint';
+      break;
     break;
   }
 }
@@ -67,12 +88,12 @@ const handlers = {
   'fetchHeadlines': function() {
     // Get the feed type based on intent.
     let intent = this.event.request.intent;
-    // const slotValue = getSlotValue(intent);
+    const slotValue = getSlotValue(intent);
 
-    // // Get opening speech string phrase and RSS endpoint name.
-    // const feedVars = getFeedVars(slotValue);
-    // const rssEndpoint = feedVars.endpoint;
+    // Get opening speech string phrase and RSS endpoint name.
+    const openingPhrase = getPhrase(intent);
 
+    // TODO: Dynamically fetch correct endpoint based on slot value.
     // var envValue = process.env[rssEndpoint];
 
     // Make emit method available within the scope of request.
