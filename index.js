@@ -24,7 +24,7 @@ const commaStringFormatter = (speechArray) => {
 
 // Get slot value for this intent.
 const getSlotValue = (intent) => {
-  var slotValue = intent.slots.genre.value;
+  var slotValue = intent.slots.feed.value;
 
   // Must be a string.
   if (typeof slotValue === 'string') {
@@ -67,24 +67,24 @@ const handlers = {
   'fetchHeadlines': function() {
     // Get the feed type based on intent.
     let intent = this.event.request.intent;
-    const slotValue = getSlotValue(intent);
+    // const slotValue = getSlotValue(intent);
 
-    // Get opening speech string phrase and RSS endpoint name.
-    const feedVars = getFeedVars(slotValue);
-    const rssEndpoint = feedVars.endpoint;
+    // // Get opening speech string phrase and RSS endpoint name.
+    // const feedVars = getFeedVars(slotValue);
+    // const rssEndpoint = feedVars.endpoint;
 
-    var envValue = process.env[rssEndpoint];
+    // var envValue = process.env[rssEndpoint];
 
     // Make emit method available within the scope of request.
     var emitMethod = this.emit;
 
-    Feed.load(envValue, function(err, rss) {  
+    Feed.load(process.env.latestEndpoint, function(err, rss) {  
         // Initialise speech array, which will eventually be converted to append to the speech string.
       var speechArray = [];
       var speechString = '';
 
       // Set intro.
-      speechString += 'Ok, here are ' + feedVars.phrase + ' on ' + process.env.siteName + ' right now. ';
+      speechString += 'Ok, here are the top stories on ' + process.env.siteName + ' right now. ';
       var rssItems = rss.items;
 
       // Loop through each item, adding the article timestamp before each title.
