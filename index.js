@@ -24,22 +24,35 @@ const commaStringFormatter = (speechArray) => {
 
 // Get slot value for this intent.
 const getSlotValue = (intent) => {
+  switch(intent) {
+    case 'fetchHeadlines':
+      // Must be a string.
+      if (typeof intent.slotname.newsType.value === 'string') {
+        return slotValue; 
+      }
+      else {
+        return false;
+      }
+    break;
+
+    default:
+
+    break;
+  }
+
   var slotValues = intent.slots;
 
   //TODO: Iterate through intent.slots and get the name and values of each.
   // It'll be intent.slots.slotname.value
 
-  // Must be a string.
-  if (typeof slotValue === 'string') {
-    return slotValue; 
-  }
+  
 
   // No slot for the intent, or bad value.
   return false;
 }
 
 // Return the correct opening phrase for the request.
-const getPhrase = (intent) => {
+const getPhrase = (slotValue) => {
   switch (intent) {
     case 'latest':
       return {'phrase':'the top 10 stories'};
@@ -56,8 +69,8 @@ const getPhrase = (intent) => {
 }
 
 // Return correct RSS endpoint based on slot value (if passed in);
-const getEndPoint = (slot) => {
-  switch(slot) {
+const getEndPoint = (slotValue) => {
+  switch(feedType) {
     case 'global':
       return 'latestEndpoint';
       break;
@@ -88,10 +101,10 @@ const handlers = {
   'fetchHeadlines': function() {
     // Get the feed type based on intent.
     let intent = this.event.request.intent;
-    const slotValue = getSlotValue(intent);
+    let feedType = getSlotValue(intent);
 
     // Get opening speech string phrase and RSS endpoint name.
-    const openingPhrase = getPhrase(intent);
+    let openingPhrase = getPhrase(feedType);
 
     // TODO: Dynamically fetch correct endpoint based on slot value.
     // var envValue = process.env[rssEndpoint];
@@ -105,7 +118,7 @@ const handlers = {
       var speechString = '';
 
       // Set intro.
-      speechString += 'Ok, here are the top stories on ' + process.env.siteName + ' right now. ';
+      speechString += 'Ok, here are the top 10 stories on ' + process.env.siteName + ' right now. ';
       var rssItems = rss.items;
 
       // Loop through each item, adding the article timestamp before each title.
