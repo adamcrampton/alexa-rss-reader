@@ -53,7 +53,7 @@ const getSlotValue = (intent) => {
 
 // Return the correct opening phrase for the request.
 const getPhrase = (slotValue) => {
-  switch (intent) {
+  switch (slotValue) {
     case 'latest':
       return {'phrase':'the top 10 stories'};
     break;
